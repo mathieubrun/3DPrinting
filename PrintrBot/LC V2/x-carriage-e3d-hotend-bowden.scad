@@ -45,11 +45,12 @@ base_plate	= [60, 40, 7];
 extruder_offset	= [0, 25, 0];
 
 carriage_hole_spacing	= 15;
-carriage_holes_top = [-carriage_hole_spacing, carriage_hole_spacing];
+carriage_holes_top = [-carriage_hole_spacing, 0];
 carriage_holes_bottom = [-carriage_hole_spacing, 0];
 carriage_holes_z	= [-25.600, -44];
-carriage_hole_d		= 4;
-carriage_nut_d		= 8;
+carriage_hole_d		= 4.2;
+carriage_nut_d		= 7.9;
+carriage_nut_h1		= 3;
 pneufit_d		= 10;
 mounting_plate_hole_spacing = 17;
 
@@ -197,13 +198,13 @@ module Carriage() {
 		// bolt holes, top row
 		#for (hx = carriage_holes_top) translate([hx, -block_size[1] -mo, carriage_holes_z[0]]) rotate([-90, 0, 0]) {
 			cylinder(r=carriage_hole_d *da6, h=block_size[1]+mo*2, $fn=6);
-			cylinder(r=carriage_nut_d *da6, h=carriage_nut_h1 +mo, $fn=6);
+			cylinder(r=carriage_nut_d/2, h=carriage_nut_h1 +mo, $fn=6);
 		}
 
 		// bolt holes, bottom row
 		#for (hx = carriage_holes_bottom) translate([hx, -block_size[1] -mo, carriage_holes_z[1]]) rotate([-90, 0, 0]) {
 			cylinder(r=carriage_hole_d *da6, h=block_size[1]+mo*2, $fn=6);
-			cylinder(r=carriage_nut_d *da6, h=carriage_nut_h1 +mo, $fn=6);
+			cylinder(r=carriage_nut_d/2, h=carriage_nut_h1 +mo, $fn=6);
 		}
 
 		// belt hole
@@ -287,30 +288,34 @@ module HotEndMount() {
 	rotate(printable ? [0, 180, 0] : [0, 0, 0])
 	difference() {
 		// plate		
-		translate([-base[0]/2 + 6, 6, -base[2]-10]) cube([base_plate[0]-12,base_plate[1]-7,8]);			
-		
-		// extruder hole
-		translate([0, extruder_offset[1], -base[2]-10-mo])
-			cylinder(r=6,h=5.5+3*mo);
-		translate([-6, extruder_offset[1], -base[2]-10-mo])
-			cube([12,20,5.5+3*mo]);
+		translate([-base[0]/2 + 6, 6, -base[2]-13]) cube([base_plate[0]-12,base_plate[1]-7,11]);			
 
+		// extruder hole
 		translate([0, extruder_offset[1], -base[2]-10+5.5+mo])
 			cylinder(r=8,h=4+2*mo);
 		translate([-8, extruder_offset[1], -base[2]-10+5.5+mo])
 			cube([16,20,4+2*mo]);
+		
+		translate([0, extruder_offset[1], -base[2]-10+0.5-mo])
+			cylinder(r=6,h=5.5+3*mo);
+		translate([-6, extruder_offset[1], -base[2]-10+0.5-mo])
+			cube([12,20,5.5+3*mo]);
 
+		translate([0, extruder_offset[1], -base[2]-10-4+mo])
+			cylinder(r=8,h=4+2*mo);
+		translate([-8, extruder_offset[1], -base[2]-10-4+mo])
+			cube([16,20,4+2*mo]);
 
 		// hotend mount holes
-		#translate([mounting_plate_hole_spacing, extruder_offset[1], - base[2] - 7.5])
-			cylinder(r=carriage_hole_d * da6, h=8 + mo*2, $fn=6);
-		#translate([mounting_plate_hole_spacing, extruder_offset[1], - base[2] - 10 - mo])
-			cylinder(r=carriage_nut_d *da6, h=carriage_nut_h1, $fn=6);
+		#translate([mounting_plate_hole_spacing, extruder_offset[1], - base[2] - 7-3.5])
+			cylinder(r=carriage_hole_d * da6, h=10 + mo*2, $fn=6);
+		#translate([mounting_plate_hole_spacing, extruder_offset[1], - base[2] - 10-4 - mo])
+			cylinder(r=carriage_nut_d/2, h=carriage_nut_h1, $fn=6);
 
-		#translate([-mounting_plate_hole_spacing, extruder_offset[1], -base[2] - 7.5])
-			cylinder(r=carriage_hole_d * da6, h=8 + mo*2, $fn=6);
-		#translate([-mounting_plate_hole_spacing, extruder_offset[1], - base[2] - 10 - mo])
-			cylinder(r=carriage_nut_d *da6, h=carriage_nut_h1, $fn=6);
+		#translate([-mounting_plate_hole_spacing, extruder_offset[1], -base[2] - 7 - 3.5])
+			cylinder(r=carriage_hole_d * da6, h=10 + mo*2, $fn=6);
+		#translate([-mounting_plate_hole_spacing, extruder_offset[1], - base[2] - 10-4 - mo])
+			cylinder(r=carriage_nut_d/2, h=carriage_nut_h1, $fn=6);
 	}
 }
 
@@ -349,4 +354,6 @@ module	show_assembly(exploded=0) {
 
 show_assembly(exploded=1);
 
-
+//Bracket();
+//HotEndMount();
+//Carriage();
