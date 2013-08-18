@@ -27,7 +27,7 @@
 // OpenSCAD Z +ve is towards the top of the Printrbot.
 
 // printable - set to 1 from the command-line
-printable	= 0;
+printable	= 1;
 
 // mo = manifold overlap
 // this is a small overlap used to force the model to be manifold
@@ -49,7 +49,7 @@ carriage_holes_top = [-carriage_hole_spacing, 0];
 carriage_holes_bottom = [-carriage_hole_spacing, 0];
 carriage_holes_z	= [-25.600, -44];
 carriage_hole_d		= 4.2;
-carriage_nut_d		= 7.9;
+carriage_nut_d		= 7.95;
 carriage_nut_h1		= 3;
 pneufit_d		= 10;
 mounting_plate_hole_spacing = 17;
