@@ -473,51 +473,74 @@ fan_holder = [fan_width + 15, 20, fan_width + 15];
 inner_hole = [35,15,20];
 bolt_distance = 5;
 bolt_depth = 5;
+top_angle = -55;
+bottom_angle = -45;
+beak_angle = [-50,0,0];
 
 module IntegratedFan()
-{
-	union()
-	{
-		difference()
-		{
-			translate([0,0,fan_holder[2]])
-			rotate([-60,0,0])
-				#cube([fan_holder[0],(fan_holder[1]-inner_hole[1])/2,35]);
+{	
+	beak_difference = [40,10];
 
-			translate([0,fan_holder[1]-(fan_holder[1]-inner_hole[1])/2,fan_holder[2]])
-			rotate([-45,0,0])
-				#cube([fan_holder[0],(fan_holder[1]-inner_hole[1])/2,20]);
-		}
-		difference()
+	difference()
+	{
+
+
+		union()
 		{
+			// main body
+			cube(fan_holder);
+
+			// beak
+			hull()
+			{
+				translate([beak_difference[0]/2,beak_difference[1]/2+15,fan_holder[2]-mo+20])
+				rotate(beak_angle)
+					cube([fan_holder[0]-beak_difference[0],fan_holder[1]-beak_difference[1],mo]);
+	
+				translate([0,0,fan_holder[2]-mo])
+					cube([fan_holder[0],fan_holder[1],mo]);
+			}
+
+			// mounting plate
 			translate([0,0,-5+mo])
 				cube([fan_holder[0],50,5]);
-			#translate([mounting_plate_hole_spacing + fan_holder[0]/2, 40, -5])
-				cylinder(r=carriage_hole_d * da6, h=5+2*mo, $fn=6);
-			#translate([-mounting_plate_hole_spacing + fan_holder[0]/2, 40, -5])
-				cylinder(r=carriage_hole_d * da6, h=5+2*mo, $fn=6);
 		}
 
-		difference()
+		// beak
+		hull()
 		{
-			cube(fan_holder);
-			
-						
+			translate([(beak_difference[0]+4)/2,22,fan_holder[2]-mo+20])
+			rotate(beak_angle)
+				cube([fan_holder[0]-beak_difference[0]-4,fan_holder[1]-13,mo]);
+	
+			translate([fan_holder[0]/2 - inner_hole[0]/2,fan_holder[1]/2 - inner_hole[1]/2,fan_holder[2]-mo])
+				cube([inner_hole[0],inner_hole[1],mo]);
+		}
 
+		// mounting holes
+		#translate([mounting_plate_hole_spacing + fan_holder[0]/2, 40, -5])
+			cylinder(r=carriage_hole_d * da6, h=5+2*mo, $fn=6);
+		#translate([-mounting_plate_hole_spacing + fan_holder[0]/2, 40, -5])
+			cylinder(r=carriage_hole_d * da6, h=5+2*mo, $fn=6);
 
-			translate([fan_holder[0]/2,0-mo,fan_holder[2]/2])
-				rotate([-90,0,0])
-					cylinder(r= fan_width/2, h=inner_hole[1] + (fan_holder[1]-inner_hole[1])/2);
+		// hole for pneufit
+		translate([(fan_holder[0]-fan_holder[0]/3)/2,fan_holder[1]+mo,-5])
+			cube([fan_holder[0]/3,50-fan_holder[1],5+2*mo]);
 
-			for (X = [[bolt_distance,bolt_depth,bolt_distance],[fan_holder[0] - bolt_distance,bolt_depth,bolt_distance],[fan_holder[0] - bolt_distance, bolt_depth,fan_holder[2] - bolt_distance],[bolt_distance,bolt_depth,fan_holder[2] - bolt_distance]]) {
-				#translate(X)
-					rotate([90,0,0])
-						cylinder(r=carriage_hole_d * da6, h=bolt_depth + mo*2, $fn=6);
-			}
-		
-			
-			translate([fan_holder[0]/2 - inner_hole[0]/2,fan_holder[1]/2 - inner_hole[1]/2,fan_holder[2]-inner_hole[2]+mo])
+		// fan hole
+		translate([fan_holder[0]/2,0-mo,fan_holder[2]/2])
+			rotate([-90,0,0])
+				cylinder(r= fan_width/2, h=inner_hole[1] + (fan_holder[1]-inner_hole[1])/2);
+
+		// flow exit hole
+		translate([fan_holder[0]/2 - inner_hole[0]/2,fan_holder[1]/2 - inner_hole[1]/2,fan_holder[2]-inner_hole[2]+mo])
 				cube(inner_hole);
+
+		// fan mounting holes
+		for (X = [[bolt_distance,bolt_depth,bolt_distance],[fan_holder[0] - bolt_distance,bolt_depth,bolt_distance],[fan_holder[0] - bolt_distance, bolt_depth,fan_holder[2] - bolt_distance],[bolt_distance,bolt_depth,fan_holder[2] - bolt_distance]]) {
+			#translate(X)
+				rotate([90,0,0])
+					cylinder(r=carriage_hole_d * da6, h=bolt_depth + mo*2, $fn=6);
 		}
 	}
 }
