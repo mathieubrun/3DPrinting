@@ -36,14 +36,10 @@ mo	= 0.01;
 // constant used to calculate radius for hex holes
 da6		= 1/cos(180/6)/2;
 
-//**************************************************
-// These dimensions are common
-
 // size of horizontal plate
 base_plate	= [60, 40, 3];
 
-extruder_offset	= [0, 25, 0];
-
+// carriage parameters
 carriage_hole_spacing	= 15;
 carriage_holes_top = [-carriage_hole_spacing, 0];
 carriage_holes_bottom = [-carriage_hole_spacing, 0];
@@ -60,9 +56,18 @@ groove_z	= 7.8;
 groove_y1	= 1.5;		// groove is deeper than the lug
 groove_y2	= 1;
 
-fan_position = [52,35,-35];
-fan_angle1 = [-45,0,0];
-fan_angle2 = [0,0,-90];
+// bracket parameters
+extruder_offset	= [0, 25, 0];
+
+// integrated fan parameters
+fan_width = 40;
+fan_holder = [fan_width + 15, 20, fan_width + 15];
+inner_hole = [35,15,20];
+bolt_distance = 5;
+bolt_depth = 5;
+top_angle = -55;
+bottom_angle = -45;
+beak_angle = [-50,0,0];
 
 module	LocatingGroove(X, Y) {
 	Z	= groove_z;
@@ -224,11 +229,7 @@ module Bracket() {
 	// main vertical plate clamped against carriage
 	// outer edge is flat
 	plate1		= [60, 5, 55];
-
-	// inner edge is bevelled
-	plate2_y	= 7.7;
-	plate2_poly	= [[29.3, 0], [29.3, -27.8], [19.6, -31.8], [-19.6, -31.8], [-29.3, -27.8], [-29.3, 0]];
-
+	
 	rotate(printable ? [0, 180, 0] : [0, 0, 0])
 
 	difference() {
@@ -288,19 +289,13 @@ translate([0,extruder_offset[1],-base[2]-2-mo])
 			cylinder(r=carriage_hole_d * da6, h=base[2] + 2, $fn=6);
 		#translate([-mounting_plate_hole_spacing, extruder_offset[1], -base[2] - 1])
 			cylinder(r=carriage_hole_d * da6, h=base[2] + 2, $fn=6);
-
-		translate(fan_position)
-			rotate(fan_angle2)
-				rotate(fan_angle1)
-					rotate([0,180,0])
-						FanMount(forDifference=1);
 	}
 }
 
 module HotEndMount() {
 	base		= base_plate;
 
-translate(printable ? [0, 0, 0] : [0, 0, -2])
+	translate(printable ? [60, 0, -5] : [0, 0, -2])
 	rotate(printable ? [0, 180, 0] : [0, 0, 0])
 	difference() {
 		// plate		
@@ -335,105 +330,86 @@ translate(printable ? [0, 0, 0] : [0, 0, -2])
 	}
 }
 
-	fan_width = 40;
-	fan_holder = [fan_width + 15, fan_width + 15, 5];
-	bolt_distance = 22;
 
-module FanHolder()
-{
-	union(){
-		difference(){
-			union(){
-				translate([0,-2.5,0])
-					cube([fan_holder[0],fan_holder[1]+6,fan_holder[2]],center=true);
+module IntegratedFan()
+{	
+	beak_difference = [40,10];
 
-				translate([-10,-35,-3])
-					rotate([45,0,0])
-						cube([35,10,fan_holder[2]],center=true);	
-			}
-			
-			translate([-bolt_distance,-bolt_distance,-mo])
-				cylinder(r=1.5,h=5 + 3*mo, $fn=6,center=true);
-			translate([-bolt_distance,bolt_distance,-mo])
-				cylinder(r=1.5,h=5 + 3*mo, $fn=6,center=true);
-			translate([bolt_distance,-bolt_distance,-mo])
-				cylinder(r=1.5,h=5 + 3*mo, $fn=6,center=true);
-			translate([bolt_distance,bolt_distance,-mo])
-				cylinder(r=1.5,h=5 + 3*mo, $fn=6,center=true);
+	translate(printable ? [-5, 0, -5] : [0, 0, 0])
+	rotate(printable ? [0, 180, 0] : [0, 0, 0])
 
-			translate([-20,-33,-3])
-				rotate([45,0,0])
-					cylinder(r=carriage_hole_d * da6, h=10 + mo*2, $fn=6,center=true);
-
-			translate([-5,-33,-3])
-				rotate([45,0,0])
-					#cylinder(r=carriage_hole_d * da6, h=10 + mo*2, $fn=6,center=true);
-
-			translate([0,0,-mo])
-				cylinder(r=fan_width / 2,h=5 + 3*mo,center=true);
-		}
-	}
-}
-
-module FanMount()
-{
-
-	duct_thickness = 2;
-	duct_end = 10;
-	angle = [15,-5,-20];
-	union(){
-		difference(){
-			union(){
-				cube(fan_holder,center=true);
-				
-				
-			}
-			
-			translate([-bolt_distance,-bolt_distance,-mo])
-				cylinder(r=1.5,h=5 + 3*mo, $fn=6,center=true);
-			translate([-bolt_distance,bolt_distance,-mo])
-				cylinder(r=1.5,h=5 + 3*mo, $fn=6,center=true);
-			translate([bolt_distance,-bolt_distance,-mo])
-				cylinder(r=1.5,h=5 + 3*mo, $fn=6,center=true);
-			translate([bolt_distance,bolt_distance,-mo])
-				cylinder(r=1.5,h=5 + 3*mo, $fn=6,center=true);
-
-			translate([0,0,-mo])
-				cylinder(r=fan_width / 2,h=5 + 3*mo,center=true);
-		}
-
-		
-		translate([-5,0,40+mo])
-			rotate(angle)
-				#cylinder(r=4, h=20);
-
-		translate([0,0,0])
-			difference()
+	union()
+	{
+		translate([(55-fan_holder[0])/2,0,0])
+		difference()
+		{
+			union()
 			{
-				hull(){
-					cylinder(r=fan_holder[0]/2, h=1);
+				// main body
+				cube(fan_holder);
 
-					translate([-5,0,40])
-						rotate(angle)
-							cylinder(r=duct_end, h=1);
-				}
-
-				hull(){
-					translate([0,0,-mo])
-					cylinder(r=fan_holder[0]/2 - duct_thickness, h=1);
-				
-					translate([-5,0,40+mo])
-						rotate(angle)
-							cylinder(r=duct_end - duct_thickness, h=1);
+				// beak
+				hull()
+				{
+					translate([beak_difference[0]/2,beak_difference[1]/2+15,fan_holder[2]-mo+20])
+					rotate(beak_angle)
+						cube([fan_holder[0]-beak_difference[0],fan_holder[1]-beak_difference[1],mo]);
+		
+					translate([0,0,fan_holder[2]-mo])
+						cube([fan_holder[0],fan_holder[1],mo]);
 				}
 			}
+
+			// beak
+			hull()
+			{
+				translate([(beak_difference[0]+4)/2,22,fan_holder[2]-mo+20])
+				rotate(beak_angle)
+					cube([fan_holder[0]-beak_difference[0]-4,fan_holder[1]-13,mo]);
+		
+				translate([fan_holder[0]/2 - inner_hole[0]/2,fan_holder[1]/2 - inner_hole[1]/2,fan_holder[2]-mo])
+					cube([inner_hole[0],inner_hole[1],mo]);
+			}
+
+			// fan hole
+			translate([fan_holder[0]/2,0-mo,fan_holder[2]/2])
+				rotate([-90,0,0])
+					cylinder(r= fan_width/2, h=inner_hole[1] + (fan_holder[1]-inner_hole[1])/2);
+
+			// flow exit hole
+			translate([fan_holder[0]/2 - inner_hole[0]/2,fan_holder[1]/2 - inner_hole[1]/2,fan_holder[2]-inner_hole[2]+mo])
+					cube(inner_hole);
+
+			// fan mounting holes
+			for (X = [[bolt_distance,bolt_depth,bolt_distance],[fan_holder[0] - bolt_distance,bolt_depth,bolt_distance],[fan_holder[0] - bolt_distance, bolt_depth,fan_holder[2] - bolt_distance],[bolt_distance,bolt_depth,fan_holder[2] - bolt_distance]]) {
+				#translate(X)
+					rotate([90,0,0])
+						cylinder(r=carriage_hole_d * da6, h=bolt_depth + mo*2, $fn=6);
+			}
+		}
+		difference()
+		{
+			// mounting plate
+			translate([0,0,-5+mo])
+				cube([55,50,5]);
+			
+			// mounting holes
+			#translate([mounting_plate_hole_spacing + 55/2, 40, -5])
+				cylinder(r=carriage_hole_d * da6, h=5+2*mo, $fn=6);
+			#translate([-mounting_plate_hole_spacing + 55/2, 40, -5])
+				cylinder(r=carriage_hole_d * da6, h=5+2*mo, $fn=6);
+
+			// hole for pneufit
+			translate([(55-55/3)/2,fan_holder[1]+mo,-5])
+				cube([55/3,50-fan_holder[1],5+2*mo]);
+		}
 	}
 }
 
 module HotEnd(forDifference=0)
 {
 	hotend_height = 70;
-	#union() {
+	union() {
 		difference() {
 			cylinder(r= 8, h=hotend_height);
 			translate([0,0,hotend_height-10])
@@ -461,96 +437,18 @@ module	show_assembly(exploded=0) {
 	HotEndMount();
 
 	translate([extruder_offset[0],extruder_offset[1], -70- base_plate[2]-2])
-		HotEnd();
+		#HotEnd();
+
 	
 	translate([-27.5,65,0])
 		rotate([180,0,0])
 			IntegratedFan();
 }
 
-fan_width = 40;
-fan_holder = [fan_width + 15, 20, fan_width + 15];
-inner_hole = [35,15,20];
-bolt_distance = 5;
-bolt_depth = 5;
-top_angle = -55;
-bottom_angle = -45;
-beak_angle = [-50,0,0];
-
-module IntegratedFan()
-{	
-	beak_difference = [40,10];
-
-	difference()
-	{
-
-
-		union()
-		{
-			// main body
-			cube(fan_holder);
-
-			// beak
-			hull()
-			{
-				translate([beak_difference[0]/2,beak_difference[1]/2+15,fan_holder[2]-mo+20])
-				rotate(beak_angle)
-					cube([fan_holder[0]-beak_difference[0],fan_holder[1]-beak_difference[1],mo]);
-	
-				translate([0,0,fan_holder[2]-mo])
-					cube([fan_holder[0],fan_holder[1],mo]);
-			}
-
-			// mounting plate
-			translate([0,0,-5+mo])
-				cube([fan_holder[0],50,5]);
-		}
-
-		// beak
-		hull()
-		{
-			translate([(beak_difference[0]+4)/2,22,fan_holder[2]-mo+20])
-			rotate(beak_angle)
-				cube([fan_holder[0]-beak_difference[0]-4,fan_holder[1]-13,mo]);
-	
-			translate([fan_holder[0]/2 - inner_hole[0]/2,fan_holder[1]/2 - inner_hole[1]/2,fan_holder[2]-mo])
-				cube([inner_hole[0],inner_hole[1],mo]);
-		}
-
-		// mounting holes
-		#translate([mounting_plate_hole_spacing + fan_holder[0]/2, 40, -5])
-			cylinder(r=carriage_hole_d * da6, h=5+2*mo, $fn=6);
-		#translate([-mounting_plate_hole_spacing + fan_holder[0]/2, 40, -5])
-			cylinder(r=carriage_hole_d * da6, h=5+2*mo, $fn=6);
-
-		// hole for pneufit
-		translate([(fan_holder[0]-fan_holder[0]/3)/2,fan_holder[1]+mo,-5])
-			cube([fan_holder[0]/3,50-fan_holder[1],5+2*mo]);
-
-		// fan hole
-		translate([fan_holder[0]/2,0-mo,fan_holder[2]/2])
-			rotate([-90,0,0])
-				cylinder(r= fan_width/2, h=inner_hole[1] + (fan_holder[1]-inner_hole[1])/2);
-
-		// flow exit hole
-		translate([fan_holder[0]/2 - inner_hole[0]/2,fan_holder[1]/2 - inner_hole[1]/2,fan_holder[2]-inner_hole[2]+mo])
-				cube(inner_hole);
-
-		// fan mounting holes
-		for (X = [[bolt_distance,bolt_depth,bolt_distance],[fan_holder[0] - bolt_distance,bolt_depth,bolt_distance],[fan_holder[0] - bolt_distance, bolt_depth,fan_holder[2] - bolt_distance],[bolt_distance,bolt_depth,fan_holder[2] - bolt_distance]]) {
-			#translate(X)
-				rotate([90,0,0])
-					cylinder(r=carriage_hole_d * da6, h=bolt_depth + mo*2, $fn=6);
-		}
-	}
-}
-
-
 show_assembly(exploded=1);
 
 //IntegratedFan();
 //FanHolder();
-//FanMount(forDifference=0);
 //Bracket();
 //HotEndMount();
 //Carriage();
