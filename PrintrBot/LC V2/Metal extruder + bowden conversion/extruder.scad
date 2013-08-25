@@ -51,11 +51,78 @@ filament_OD=3;
 filament_hole_zpos=24+filament_drive_gear_hub_length;
 filament_hole_offset=(filament_OD+filament_drive_gear_teeth*gear_module)/2;
 
-hotend_diameter = 10;
+hotend_diameter = 9.8;
 bot_hex=7.5;
 
 $fn = 120;
 drive_offset=1;
+
+mo = 0.01;
+
+bearing_clr	= 10.2;
+bearing_id	= 8;
+bearing_w	= 24;
+bearing_od	= 15.7;
+
+thickness= 5;
+
+support_thickness = (bearing_od + thickness)/4;
+
+
+
+da6 = 1/cos(180/6)/2;
+
+nut_depth = 2;
+nut_d	= 7.95;
+hole_d = 4.2 * da6;
+nut_offset = 10;
+
+module holder()
+{
+difference()
+{
+	union()
+	{
+		cube([support_thickness,bearing_od*2,bearing_w]);
+
+		translate([(bearing_od + thickness)/2,bearing_od+5,0])	
+			cylinder(r=(bearing_od + thickness)/2,h=bearing_w);
+	}
+
+	// linear bearing hole
+	translate([(bearing_od + thickness)/2,bearing_od+5,-mo])
+		cylinder(r=bearing_od/2,h=bearing_w+2+2*mo);
+	
+	// left nut
+	translate([-mo-10,bearing_od-nut_offset, 15])
+	rotate([0,90,0])
+		#cylinder(r=hole_d, h=20);	
+
+	translate([-mo+support_thickness-nut_depth+1+1+2*mo,bearing_od-nut_offset, 15])
+	rotate([0,90,0])
+		cylinder(r=7, h=1);
+
+
+		translate([-10,-12,27.5]){
+	
+			// hotend cutout
+			translate(v=[6,0,0]) 
+			rotate([45,0,0]) 
+			rotate([0,90,0]) 
+			cube([16,16,20]);
+		}
+	
+}
+
+
+}
+
+
+translate([bearing_od*2,-base_plate_depth/2,-40])
+rotate([0,90,90])
+holder();
+
+
 
 
 rotate(a=90,v=[0,1,0]){
@@ -65,7 +132,7 @@ rotate(a=90,v=[0,1,0]){
 //	translate([-100,filament_hole_offset,filament_hole_zpos])rotate([0,90,0])filament();
 //	translate([shafts_distance/2-2,3+(filament_drive_gear_teeth*gear_module+608_diam)/2,21.4+7])rotate([0,0,0])bearing_608();//idler bearing
 
-	translate([shafts_distance/2,0,0])mounting_plate();
+	mounting_plate();
 //	translate(v=[44,13,46]) rotate(a=90,v=[0,0,1]) rotate(a=180,v=[0,1,0]) wadeidler();
 }
 
@@ -92,6 +159,9 @@ module mounting_plate(){
 			difference(){
 				translate([(gear_module*driven_gear_teeth+2+base_plate_height)/2-0.01,0,filament_hole_zpos])color(PlasticBlue)base_plate();
 				// cut it on the idler wall side to fit belt clamps on the carriage
+
+				
+
 				translate(v=[-50,-50,51])
 					cube(size=[100,100,20]);			
 			}		
@@ -180,8 +250,13 @@ module base_plate(){
 		translate([-10,filament_hole_offset,0]){
 	
 			// hotend cutout
-			translate(v=[6,0,0]) rotate([0,90,0]) cylinder(r=hotend_diameter/2,h=20);
+			translate(v=[6,0,0]) rotate([0,90,0]) 
+				cylinder(r=hotend_diameter/2,h=20);
 		}
+
+		translate([-mo-10,bearing_od-nut_offset-11.7, -6.1])
+		rotate([0,90,0])
+		#cylinder(r=hole_d, h=20);	
 		
 	}
 }
