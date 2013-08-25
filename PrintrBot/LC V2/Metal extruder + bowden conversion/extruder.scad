@@ -10,10 +10,10 @@
 * 
 */
 
-include<configuration.scad>
-include<nema_motor.scad>
-include <shapes.scad>
-include <lib-teardrop.scad>
+include <common\configuration.scad>
+include <common\nema_motor.scad>
+include <common\shapes.scad>
+include <common\lib-teardrop.scad>
 
 $fn=36;
 gear_module = 0.5;

@@ -207,6 +207,8 @@ module Carriage() {
 		// bolt holes, top row
 		#for (hx = carriage_holes_top) translate([hx, -block_size[1] -mo, carriage_holes_z[0]]) rotate([-90, 0, 0]) {
 			cylinder(r=carriage_hole_d *da6, h=block_size[1]+mo*2, $fn=6);
+			translate([0,0,-1])
+			cylinder(r=7, h=1);
 		}
 
 		// bolt holes, bottom row
@@ -448,7 +450,6 @@ module	show_assembly(exploded=0) {
 show_assembly(exploded=1);
 
 //IntegratedFan();
-//FanHolder();
 //Bracket();
 //HotEndMount();
 //Carriage();

@@ -1,4 +1,4 @@
-include<configuration.scad>
+include <common\configuration.scad>
 // next stuff is copied from PrusaMendel, merged with Guidler stuff from GregFrost
 
 wade_block_height=55;
