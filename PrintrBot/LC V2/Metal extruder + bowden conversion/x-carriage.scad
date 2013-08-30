@@ -27,7 +27,7 @@
 // OpenSCAD Z +ve is towards the top of the Printrbot.
 
 // printable - set to 1 from the command-line
-printable	= 0;
+printable	= 1;
 
 // mo = manifold overlap
 // this is a small overlap used to force the model to be manifold
@@ -262,8 +262,8 @@ translate([0,extruder_offset[1],-base[2]-2-mo])
 
 		}
 
-		translate([0,extruder_offset[1],-base[2]-mo])
-			cylinder(r=pneufit_d/2, h = base[2] + 2*mo);
+		translate([0,extruder_offset[1],-base[2]*2+mo])
+			#cylinder(r=pneufit_d/2, h = base[2] + 5+2*mo);
 
 		translate([15,-5,-57])
 			cube([30,60,40]);
@@ -298,7 +298,6 @@ module HotEndMount() {
 	base		= base_plate;
 
 	translate(printable ? [60, 0, -5] : [0, 0, -2])
-	rotate(printable ? [0, 180, 0] : [0, 0, 0])
 	difference() {
 		// plate		
 		translate([-base[0]/2 + 6, 6, -base[2]-13]) cube([base_plate[0]-12,base_plate[1]-7,11]);			
@@ -447,10 +446,10 @@ module	show_assembly(exploded=0) {
 			IntegratedFan();
 }
 
-show_assembly(exploded=1);
+//show_assembly(exploded=1);
 
 //IntegratedFan();
 //Bracket();
 //HotEndMount();
-//Carriage();
+Carriage();
 
