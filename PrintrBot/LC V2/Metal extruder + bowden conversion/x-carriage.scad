@@ -250,12 +250,12 @@ translate([0,extruder_offset[1],-base[2]-2-mo])
 			LocatingGroove(X=plate1[0], Y=groove_y2);
 
 			// flange
-			translate([plate1[0]/2-5,plate1[1],-base[2]])
+			translate([plate1[0]/2-5,plate1[1]-mo,-base[2]+mo])
 				rotate([0, 90, 0]) 
 					linear_extrude(height=5, convexity=1)
 						polygon([[0, 0], [0,,base[1]-plate1[1] +mo], [plate1[2]-base[2]+mo, 0]]);
 
-			translate([-plate1[0]/2,plate1[1],-base[2]])
+			translate([-plate1[0]/2,plate1[1]-mo,-base[2]+mo])
 				rotate([0, 90, 0]) 
 					linear_extrude(height=5, convexity=1)
 						polygon([[0, 0], [0,base[1]-plate1[1] +mo], [plate1[2]-base[2]+mo, 0]]);
@@ -266,7 +266,7 @@ translate([0,extruder_offset[1],-base[2]-2-mo])
 			#cylinder(r=pneufit_d/2, h = base[2] + 5+2*mo);
 
 		translate([15,-5,-57])
-			cube([30,60,40]);
+			#cube([30,60,40]);
 
 		// bracket-carriage mounting holes
 		for (X = carriage_holes_top) {
@@ -449,7 +449,7 @@ module	show_assembly(exploded=0) {
 //show_assembly(exploded=1);
 
 //IntegratedFan();
-//Bracket();
+Bracket();
 //HotEndMount();
-Carriage();
+//Carriage();
 

@@ -120,12 +120,12 @@ difference()
 
 translate([bearing_od*2,-base_plate_depth/2,-40])
 rotate([0,90,90])
-holder();
+//holder();
 
 
 
 
-rotate(a=90,v=[0,1,0]){
+rotate(a=90,v=[0,0,0]){
  //   translate([-shafts_distance/2-drive_offset,0,-(motor_height)/2])nema();
 //	translate([-shafts_distance/2-drive_offset,0,5.5])motor_gear();
 //	translate([shafts_distance/2-drive_offset,0,-0.1])driven_gear();
