@@ -62,11 +62,11 @@ mo = 0.01;
 bearing_clr	= 10.2;
 bearing_id	= 8;
 bearing_w	= 24;
-bearing_od	= 15.7;
+bearing_od	= 15.25;
 
 thickness= 5;
 
-support_thickness = (bearing_od + thickness)/4;
+support_thickness = (bearing_od + thickness)/4 +4;
 
 
 
@@ -88,6 +88,9 @@ difference()
 		translate([(bearing_od + thickness)/2,bearing_od+5,0])	
 			cylinder(r=(bearing_od + thickness)/2,h=bearing_w);
 	}
+
+	translate([support_thickness-5.5,-mo,-mo])
+	cube([1,bearing_od+2*mo+5,bearing_w+2*mo]);
 
 	// linear bearing hole
 	translate([(bearing_od + thickness)/2,bearing_od+5,-mo])
@@ -118,23 +121,15 @@ difference()
 }
 
 
-translate([bearing_od*2,-base_plate_depth/2,-40])
-rotate([0,90,90])
-//holder();
+translate([bearing_od*2,-base_plate_depth/2,31.3])
+//rotate([-90,0,0])
+holder();
 
 
 
 
-rotate(a=90,v=[0,0,0]){
- //   translate([-shafts_distance/2-drive_offset,0,-(motor_height)/2])nema();
-//	translate([-shafts_distance/2-drive_offset,0,5.5])motor_gear();
-//	translate([shafts_distance/2-drive_offset,0,-0.1])driven_gear();
-//	translate([-100,filament_hole_offset,filament_hole_zpos])rotate([0,90,0])filament();
-//	translate([shafts_distance/2-2,3+(filament_drive_gear_teeth*gear_module+608_diam)/2,21.4+7])rotate([0,0,0])bearing_608();//idler bearing
+//mounting_plate();
 
-	mounting_plate();
-//	translate(v=[44,13,46]) rotate(a=90,v=[0,0,1]) rotate(a=180,v=[0,1,0]) wadeidler();
-}
 
 module mounting_plate(){
 	difference(){

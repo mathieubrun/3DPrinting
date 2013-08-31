@@ -27,7 +27,7 @@
 // OpenSCAD Z +ve is towards the top of the Printrbot.
 
 // printable - set to 1 from the command-line
-printable	= 1;
+printable	= 0;
 
 // mo = manifold overlap
 // this is a small overlap used to force the model to be manifold
@@ -37,18 +37,20 @@ mo	= 0.01;
 da6		= 1/cos(180/6)/2;
 
 // size of horizontal plate
-base_plate	= [60, 40, 3];
+base_plate	= [50, 40, 5];
+block_size		= [50, 25, 32];	// ajd - make wider to seperate the groove from the bearing
 
+carriage_hole_offset = 0;
 // carriage parameters
 carriage_hole_spacing	= 15;
-carriage_holes_top = [-carriage_hole_spacing, 0];
-carriage_holes_bottom = [-carriage_hole_spacing, 0];
+carriage_holes_top = [-carriage_hole_spacing + carriage_hole_offset, 0 + carriage_hole_offset, carriage_hole_spacing + carriage_hole_offset];
+carriage_holes_bottom = [-carriage_hole_spacing + carriage_hole_offset, 0 + carriage_hole_offset, carriage_hole_spacing + carriage_hole_offset];
 carriage_holes_z	= [-25.600, -44];
 carriage_hole_d		= 4.2;
 carriage_nut_d		= 7.95;
 carriage_nut_h1		= 3;
 pneufit_d		= 10;
-mounting_plate_hole_spacing = 17;
+mounting_plate_hole_spacing = 13;
 
 // locating lug, dimensions from PB files
 groove_zo	= 30;
@@ -67,7 +69,15 @@ bolt_distance = 5;
 bolt_depth = 5;
 top_angle = -55;
 bottom_angle = -45;
-beak_angle = [-50,0,0];
+beak_angle = [-60,0,0];
+
+// LM8UU 8x15x24
+// You may need to adjust bearing_od
+// Initial print 15.2 (0.4mm layer, 0.5mm nozzle) measured 14.2
+bearing_clr	= 10.2;
+bearing_id	= 8;
+bearing_od	= 15.25;
+bearing_w	= 24;
 
 module	LocatingGroove(X, Y) {
 	Z	= groove_z;
@@ -81,21 +91,13 @@ module	LocatingGroove(X, Y) {
 
 module Carriage() {
 
-	block_size		= [60, 25, 32];	// ajd - make wider to seperate the groove from the bearing
+	
 
 	rod_offset	= 15.5;
 	rod_spacing	= 39; // or 38 ?
 
 	gap1_y		= 2;
 
-	// LM8UU 8x15x24
-	// You may need to adjust bearing_od
-	// Initial print 15.2 (0.4mm layer, 0.5mm nozzle) measured 14.2
-	bearing_clr	= 10.2;
-	bearing_id	= 8;
-	bearing_od	= 15.2;
-	bearing_w	= 24;
-	bearing_od	= 15.7;
 
 	belt_distance_from_rod = 40;
 	x_stop_distance_from_rod = 30;
@@ -103,7 +105,7 @@ module Carriage() {
 	x_stop		= [10, 28, 10];
 	x_stop_offset	= [-block_size[0]/2, -x_stop[1] -block_size[1] +mo + 10, -rod_offset +1 - rod_spacing -x_stop[2]];
 
-	flange		= [block_size[0] - 10, 40, 5];
+	flange		= [block_size[0], 40, 5];
 	flange_offset	= [-block_size[0]/2, -flange[1] -block_size[1] +mo, -rod_offset +1 -flange[2]];	// from PB files, top of flange is 1mm above rod center
 
 	// FIXME - check bottom of flange!
@@ -113,7 +115,7 @@ module Carriage() {
 	belt_offset2	= [-block_size[0]/2 + 10, -block_size[1]/2 - belt_distance_from_rod -belt[1]/2, flange_offset[2] -mo];
 
 	gusset1_x	= 5;
-	gusset1_yz	= 12;
+	gusset1_yz	= 15;
 
 	gusset2_x	= flange[0];
 	gusset2_yz	= 5;
@@ -122,7 +124,7 @@ module Carriage() {
 	gusset3_yz	= 15;
 
 	gusset4_x	= flange[0];
-	gusset4_yz	= 2;
+	gusset4_yz	= 5;
 
 	gusset5_z	= flange[2];
 	gusset5_xy	= block_size[0] - flange[0];
@@ -138,9 +140,9 @@ module Carriage() {
 			// main body, bottom rod
 			hull() {
 				translate([-block_size[0]/2, -block_size[1], -block_size[2]])
-					cube([block_size[0]/2+bearing_w/2, block_size[1], mo]);
+					cube([block_size[0], block_size[1], mo]);
 				translate([-block_size[0]/2, -block_size[1]/2, -block_size[2]/2 -rod_spacing])
-					rotate([0, 90, 0]) cylinder(r=block_size[1]/2, h=block_size[0]/2 +bearing_w/2);
+					rotate([0, 90, 0]) cylinder(r=block_size[1]/2, h=block_size[0]);
 			}
 
 			// x endstop
@@ -149,32 +151,30 @@ module Carriage() {
 				rotate([0, 90, 0]) cylinder(r=x_stop[2]/2,h=x_stop[0] + +mo*2);
 
 			// belt flange
-			translate(flange_offset) cube(flange);
+			translate(flange_offset) 
+				cube(flange);
 
 			// top right gusset
 			translate([-block_size[0]/2, -block_size[1] -gusset1_yz, flange_offset[2] +flange[2] -mo])
 			rotate([0, 90, 0]) linear_extrude(height=gusset1_x, convexity=1)
-					polygon([[0, 0], [0, gusset1_yz+mo], [-gusset1_yz -mo, gusset1_yz +mo]]);
+				polygon([[0, 0], [0, gusset1_yz+mo], [-gusset1_yz -mo, gusset1_yz +mo]]);
 
 			// top wide gusset
 			translate([-block_size[0]/2, -block_size[1] -gusset2_yz, flange_offset[2] +flange[2] -mo])
 			rotate([0, 90, 0]) linear_extrude(height=gusset2_x, convexity=1)
-					polygon([[0, 0], [0, gusset2_yz +mo], [-gusset2_yz -mo, gusset2_yz -mo]]);
+				polygon([[0, 0], [0, gusset2_yz +mo], [-gusset2_yz -mo, gusset2_yz -mo]]);
 
 			// bottom right gusset
 			translate([-block_size[0]/2, -block_size[1] -gusset3_yz, flange_offset[2] +mo])
 			rotate([0, 90, 0]) linear_extrude(height=gusset3_x, convexity=1)
-					polygon([[0, 0], [0, gusset3_yz+mo], [gusset3_yz +mo, gusset3_yz +mo]]);
+				polygon([[0, 0], [0, gusset3_yz+mo], [gusset3_yz +mo, gusset3_yz +mo]]);
 
 			// bottom wide gusset
 			translate([-block_size[0]/2, -block_size[1] -gusset4_yz, flange_offset[2] +mo])
 			rotate([0, 90, 0]) linear_extrude(height=gusset4_x, convexity=1)
-					polygon([[0, 0], [0, gusset4_yz+mo], [gusset4_yz +mo, gusset4_yz +mo]]);
+				polygon([[0, 0], [0, gusset4_yz+mo], [gusset4_yz +mo, gusset4_yz +mo]]);
 
-			// flange edge gusset
-			translate([block_size[0]/2 - gusset5_xy -mo, -block_size[1] -gusset5_xy, flange_offset[2]])
-			linear_extrude(height=gusset5_z, convexity=1)
-					polygon([[0, 0], [gusset5_xy +mo, gusset5_xy +mo], [0, gusset5_xy +mo]]);
+			
 
 		}
 
@@ -192,13 +192,11 @@ module Carriage() {
 		translate([-block_size[0]/2 -mo, -block_size[1]/2, -rod_offset])
 			rotate([0, 90, 0]) cylinder(r=bearing_od/2, h=block_size[0] +mo*2);
 
-		// bottom rod clearance
-		translate([-block_size[0]/2 -mo, -block_size[1]/2, -rod_offset -rod_spacing])
-			rotate([0, 90, 0]) cylinder(r=bearing_clr/2, h=block_size[0] +mo*2);
+	
 
 		// bottom rod bearing
-		translate([-bearing_w/2, -block_size[1]/2, -rod_offset -rod_spacing])
-			rotate([0, 90, 0]) cylinder(r=bearing_od/2, h=bearing_w +mo);
+		translate([-block_size[0]/2 - mo, -block_size[1]/2, -rod_offset -rod_spacing])
+			rotate([0, 90, 0]) cylinder(r=bearing_od/2, h=block_size[0] +mo*2);
 
 		// x end stop screw hole
 		translate([-block_size[0]/2 - 2* mo, -block_size[1]/2 - x_stop_distance_from_rod, -rod_offset-rod_spacing - bearing_id/2])
@@ -230,7 +228,7 @@ module Bracket() {
 
 	// main vertical plate clamped against carriage
 	// outer edge is flat
-	plate1		= [60, 5, 55];
+	plate1		= [50, 5, 55];
 	
 	rotate(printable ? [0, 180, 0] : [0, 0, 0])
 
@@ -238,9 +236,6 @@ module Bracket() {
 		union() {
 			// horizontal plate
 			translate([-base[0]/2, 0, -base[2]]) cube(base);
-
-translate([0,extruder_offset[1],-base[2]-2-mo])
-				cylinder(r=pneufit_d/2 +5, h = base[2] + 2*mo);
 
 			// vertical plate
 			translate([-plate1[0]/2, 0, -plate1[2]])
@@ -265,16 +260,16 @@ translate([0,extruder_offset[1],-base[2]-2-mo])
 		translate([0,extruder_offset[1],-base[2]*2+mo])
 			#cylinder(r=pneufit_d/2, h = base[2] + 5+2*mo);
 
-		translate([15,-5,-57])
-			#cube([30,60,40]);
+		translate([block_size[0]/2-5-mo,5,-60])
+			#cube([30,30,40]);
 
 		// bracket-carriage mounting holes
 		for (X = carriage_holes_top) {
 			// mounting holes
 			#translate([X, -mo, carriage_holes_z[0]]) rotate([-90, 0, 0])
 				cylinder(r=carriage_hole_d *da6, h=plate1[1] +mo*2, $fn=6);
-			#translate([X, -mo+3, carriage_holes_z[0]]) rotate([-90, 0, 0])
-				cylinder(r=carriage_nut_d/2, h=carriage_nut_h1, $fn=6);
+			//#translate([X, -mo+4, carriage_holes_z[0]]) rotate([-90, 0, 0])
+			//	cylinder(r=carriage_nut_d/2, h=carriage_nut_h1, $fn=6);
 		}
 
 		// bracket-carriage mounting holes
@@ -282,8 +277,8 @@ translate([0,extruder_offset[1],-base[2]-2-mo])
 			// mounting holes
 			#translate([X, -mo, carriage_holes_z[1]]) rotate([-90, 0, 0])
 				cylinder(r=carriage_hole_d *da6, h=plate1[1] +mo*2, $fn=6);
-			#translate([X, -mo+3, carriage_holes_z[1]]) rotate([-90, 0, 0])
-				cylinder(r=carriage_nut_d/2, h=carriage_nut_h1, $fn=6);
+			//#translate([X, -mo+4, carriage_holes_z[1]]) rotate([-90, 0, 0])
+			//	cylinder(r=carriage_nut_d/2, h=carriage_nut_h1, $fn=6);
 		}
 
 		// hotend mount holes
@@ -300,12 +295,13 @@ module HotEndMount() {
 	translate(printable ? [60, 0, -5] : [0, 0, -2])
 	difference() {
 		// plate		
-		translate([-base[0]/2 + 6, 6, -base[2]-13]) cube([base_plate[0]-12,base_plate[1]-7,11]);			
+		translate([-base[0]/2 + 6, 6, -base[2]-13]) 
+			cube([base_plate[0]-12,base_plate[1]-7,11]);			
 
 		// extruder hole
-		translate([0, extruder_offset[1], -base[2]-10+5.5+mo])
+		translate([0, extruder_offset[1], -base[2]-10+5.6+mo])
 			cylinder(r=8,h=4+2*mo);
-		translate([-8, extruder_offset[1], -base[2]-10+5.5+mo])
+		translate([-8, extruder_offset[1], -base[2]-10+5.6+mo])
 			cube([16,20,4+2*mo]);
 		
 		translate([0, extruder_offset[1], -base[2]-10+0.5-mo])
@@ -352,7 +348,7 @@ module IntegratedFan()
 				// beak
 				hull()
 				{
-					translate([beak_difference[0]/2,beak_difference[1]/2+15,fan_holder[2]-mo+20])
+					translate([beak_difference[0]/2,beak_difference[1]/2+12,fan_holder[2]-mo+20])
 					rotate(beak_angle)
 						cube([fan_holder[0]-beak_difference[0],fan_holder[1]-beak_difference[1],mo]);
 		
@@ -364,7 +360,7 @@ module IntegratedFan()
 			// beak
 			hull()
 			{
-				translate([(beak_difference[0]+4)/2,22,fan_holder[2]-mo+20])
+				translate([(beak_difference[0]+4)/2,18,fan_holder[2]-mo+20])
 				rotate(beak_angle)
 					cube([fan_holder[0]-beak_difference[0]-4,fan_holder[1]-13,mo]);
 		
@@ -390,19 +386,43 @@ module IntegratedFan()
 		}
 		difference()
 		{
+			union()
+			{
 			// mounting plate
-			translate([0,0,-5+mo])
-				cube([55,50,5]);
+			translate([(55-40)/2,0,-5+mo])
+				cube([40,50,5]);
 			
+			translate([0,0,-5+mo])
+				cube([55,20,5]);
+			
+			translate([(55-40)/2,0,-mo])
+				cube([40,50,5]);
+			}
+
 			// mounting holes
 			#translate([mounting_plate_hole_spacing + 55/2, 40, -5])
+			{
 				cylinder(r=carriage_hole_d * da6, h=5+2*mo, $fn=6);
+				translate([0,0,9])
+					cylinder(r=7, h=1);
+
+				translate([0,0,6+mo])
+					cylinder(r=4, h=3);
+			}
+
 			#translate([-mounting_plate_hole_spacing + 55/2, 40, -5])
+			{
 				cylinder(r=carriage_hole_d * da6, h=5+2*mo, $fn=6);
+				translate([0,0,9])
+					cylinder(r=7, h=1);
+
+				translate([0,0,6+mo])
+					cylinder(r=4, h=3);
+			}
 
 			// hole for pneufit
-			translate([(55-55/3)/2,fan_holder[1]+mo,-5])
-				cube([55/3,50-fan_holder[1],5+2*mo]);
+			translate([(55-12)/2,fan_holder[1]+mo,-5])
+				cube([12,50-fan_holder[1],10+2*mo]);
 		}
 	}
 }
@@ -441,15 +461,15 @@ module	show_assembly(exploded=0) {
 		#HotEnd();
 
 	
-	translate([-27.5,65,0])
+	translate([-27.5,65,5])
 		rotate([180,0,0])
 			IntegratedFan();
 }
 
-//show_assembly(exploded=1);
+show_assembly(exploded=1);
 
 //IntegratedFan();
-Bracket();
+//Bracket();
 //HotEndMount();
 //Carriage();
 
