@@ -77,8 +77,16 @@ nut_d	= 7.95;
 hole_d = 4.2 * da6;
 nut_offset = 10;
 
+//translate([bearing_od*2,-base_plate_depth/2,31.3])
+//holder();
+
+rotate([0,-90,0])
+mounting_plate();
+
+
 module holder()
 {
+mirror()
 difference()
 {
 	union()
@@ -121,17 +129,11 @@ difference()
 }
 
 
-translate([bearing_od*2,-base_plate_depth/2,31.3])
-//rotate([-90,0,0])
-holder();
 
-
-
-
-//mounting_plate();
 
 
 module mounting_plate(){
+mirror()
 	difference(){
 		union(){
 			translate([-shafts_distance-drive_offset,0,mounting_plate_A_height/2])color(PlasticBlue)cube([motor_OD,gear_module*driven_gear_teeth+2,mounting_plate_A_height],center=true);//motor mount

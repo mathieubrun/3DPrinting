@@ -261,7 +261,7 @@ module Bracket() {
 			#cylinder(r=pneufit_d/2, h = base[2] + 5+2*mo);
 
 		translate([block_size[0]/2-5-mo,5,-60])
-			#cube([30,30,40]);
+			cube([30,30,40]);
 
 		// bracket-carriage mounting holes
 		for (X = carriage_holes_top) {
