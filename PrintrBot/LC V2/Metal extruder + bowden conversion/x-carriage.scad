@@ -49,7 +49,7 @@ carriage_holes_z	= [-25.600, -44];
 carriage_hole_d		= 4.2;
 carriage_nut_d		= 7.95;
 carriage_nut_h1		= 3;
-pneufit_d		= 9.8;
+pneufit_d		= 9.7;
 mounting_plate_hole_spacing = 13;
 
 // locating lug, dimensions from PB files
@@ -129,7 +129,8 @@ module Carriage() {
 	gusset5_z	= flange[2];
 	gusset5_xy	= block_size[0] - flange[0];
 
-	rotate(printable ? [0, 90, 0] : [0, 0, 0])
+	mirror()
+	rotate(printable ? [0, 270, 0] : [0, 0, 0])
 	translate(printable ? [block_size[0]/2, block_size[1]/2, block_size[2]/2] : [0, 0, 0])
 	difference() {
 		union() {

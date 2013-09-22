@@ -1,4 +1,4 @@
-include <common\configuration.scad>
+include <configuration.scad>
 // next stuff is copied from PrusaMendel, merged with Guidler stuff from GregFrost
 
 wade_block_height=55;
@@ -123,7 +123,7 @@ module wadeidler()
 		{
 			difference()
 			{
-				cylinder(h=idler_608_height,r=idler_608_diameter/2,
+				cylinder(h=idler_608_height+1.5,r=idler_608_diameter/2+1.5,
 					center=true,$fn=60);
 			//	for (i=[0,1])
 			//	rotate([180*i,0,0])
@@ -152,10 +152,10 @@ module wadeidler()
 				idler_screw_hole*idler_mounting_hole_across])
 			rotate([0,90,0])
 			{
-				translate([0,0,4])
+//				translate([0,0,4])
 				#cylinder(r=carriage_hole_d *da6,h=idler_height+2,$fn=16);
 
-				cylinder(r=carriage_nut_d/2, h=carriage_nut_h1, $fn=6);
+				//cylinder(r=carriage_nut_d/2, h=carriage_nut_h1, $fn=6);
 
 
 			}

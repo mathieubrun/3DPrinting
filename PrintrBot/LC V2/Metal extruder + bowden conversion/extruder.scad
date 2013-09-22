@@ -10,10 +10,10 @@
 * 
 */
 
-include <common\configuration.scad>
-include <common\nema_motor.scad>
-include <common\shapes.scad>
-include <common\lib-teardrop.scad>
+include <configuration.scad>
+include <nema_motor.scad>
+include <shapes.scad>
+include <lib-teardrop.scad>
 
 $fn=36;
 gear_module = 0.5;
@@ -179,20 +179,13 @@ mirror()
 				translate(v=[-17,30,24]) rotate(a=90, v=[1,0,0]){		
 					cylinder(r=2.2, h=60);
 							
-					//translate(v=[0,0,50]) hexagon(bot_hex,12);					
+					translate(v=[0,0,50]) hexagon(bot_hex,12);					
 				}
-
-				translate(v=[-27,-18,21.8])
-					cube([10,8,4.4]);
 
 				translate(v=[-17,30,40]) rotate(a=90, v=[1,0,0]){
 					cylinder(r=2.2, h=60);		
-					//translate(v=[0,0,50]) hexagon(bot_hex,12);	
+					translate(v=[0,0,50]) hexagon(bot_hex,12);	
 				}
-
-				translate(v=[-27,-18,37.8])
-					cube([10,8,4.4]);
-
 			}
 		}
 
