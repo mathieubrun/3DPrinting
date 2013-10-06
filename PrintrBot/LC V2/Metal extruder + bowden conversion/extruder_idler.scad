@@ -50,7 +50,7 @@ idler_fulcrum=idler_axis-[0,idler_fulcrum_offset,0];
 idler_corners_radius=4; 
 idler_height=12;
 idler_608_diameter=608_diameter+2;
-idler_608_height=8.25;
+idler_608_height=10.2;
 idler_mounting_hole_across=8;
 idler_mounting_hole_up=15;
 idler_short_side=wade_block_depth-2;
@@ -95,7 +95,7 @@ module wadeidler()
 		//Filament Path	
 		translate(idler_axis+[guide_height,+idler_long_side-idler_long_bottom-guide_length/2,0])
 		{
-		cube([7,guide_length+2,3.5],center=true);
+		//cube([7,guide_length+2,3.5],center=true);
 		translate([-7/2,0,0])
 		rotate([90,0,0])
 		cylinder(h=guide_length+4,r=3.5/2,center=true,$fn=66);
@@ -123,7 +123,7 @@ module wadeidler()
 		{
 			difference()
 			{
-				cylinder(h=idler_608_height+1.5,r=idler_608_diameter/2+1.5,
+				cylinder(h=idler_608_height,r=idler_608_diameter/2+1.5,
 					center=true,$fn=60);
 			//	for (i=[0,1])
 			//	rotate([180*i,0,0])
@@ -152,11 +152,14 @@ module wadeidler()
 				idler_screw_hole*idler_mounting_hole_across])
 			rotate([0,90,0])
 			{
-//				translate([0,0,4])
-				#cylinder(r=carriage_hole_d *da6,h=idler_height+2,$fn=16);
-
-				//cylinder(r=carriage_nut_d/2, h=carriage_nut_h1, $fn=6);
-
+				translate([0,0,0])
+				cylinder(r=carriage_hole_d*da6,h=idler_height+2,$fn=16);
+				//translate([0,carriage_hole_d*da6-1,0])
+				//cylinder(r=carriage_hole_d*da6,h=idler_height+2,$fn=16);
+				//translate([0,-carriage_hole_d*da6+1,0])
+				//cylinder(r=carriage_hole_d*da6,h=idler_height+2,$fn=16);
+				//translate([-carriage_hole_d*da6,-carriage_hole_d*da6+.75,0])
+				//cube([carriage_hole_d*da6*2,carriage_hole_d*da6*2-1.5,idler_height+2]);
 
 			}
 
