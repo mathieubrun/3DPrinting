@@ -178,13 +178,14 @@ mirror()
 				}
 				translate(v=[-17,30,24]) rotate(a=90, v=[1,0,0]){		
 					cylinder(r=2.2, h=60);
-							
-					translate(v=[0,0,50]) hexagon(bot_hex,12);					
+					
+					//translate(v=[0,0,50]) hexagon(bot_hex,12);					
 				}
 
 				translate(v=[-17,30,40]) rotate(a=90, v=[1,0,0]){
 					cylinder(r=2.2, h=60);		
-					translate(v=[0,0,50]) hexagon(bot_hex,12);	
+			
+					//translate(v=[0,0,50]) hexagon(bot_hex,12);	
 				}
 			}
 		}
@@ -198,6 +199,9 @@ mirror()
 		translate([-shafts_distance-drive_offset,0,0]){
 			translate([0,0,7.5])rotate(a=90,v=[0,1,0])rotate(a=180,v=[1,0,0])teardrop(pdiam(motor_flange_dia+2)/2,mounting_plate_A_height+1); // motor flange cutout
 			
+
+//		translate([0,0,-24])			
+//			#nema();
 
 			//mounting screw holes for motor:
 			translate([motor_mounting_hole_distance/2,motor_mounting_hole_distance/2,-0.5])cylinder(r=motor_mounting_hole_diam/2,h=mounting_plate_A_height+1);
