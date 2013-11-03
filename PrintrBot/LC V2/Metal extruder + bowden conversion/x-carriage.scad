@@ -37,7 +37,7 @@ mo	= 0.01;
 da6		= 1/cos(180/6)/2;
 
 // size of horizontal plate
-base_plate	= [50, 40, 5];
+base_plate	= [50, 40, 7];
 block_size		= [50, 25, 32];	// ajd - make wider to seperate the groove from the bearing
 
 carriage_hole_offset = 0;
@@ -232,39 +232,41 @@ module Bracket() {
 
 	// main vertical plate clamped against carriage
 	// outer edge is flat
-	plate1		= [50, 5, 55];
+	plate1		= [50, 5, 60];
 	
+	offset = 8;
+
 	rotate(printable ? [0, 180, 0] : [0, 0, 0])
 
 	difference() {
 		union() {
 			// horizontal plate
-			translate([-base[0]/2, 0, -base[2]]) cube(base);
+			translate([-base[0]/2, 0, -base[2]+offset]) cube(base);
 
 			// vertical plate
-			translate([-plate1[0]/2, 0, -plate1[2]])
+			translate([-plate1[0]/2, 0, -plate1[2]+offset])
 				cube(plate1);
 
 			// add locating lug
 			LocatingGroove(X=plate1[0], Y=groove_y2);
 
 			// flange
-			translate([plate1[0]/2-5,plate1[1]-mo,-base[2]+mo])
+			translate([plate1[0]/2-5,plate1[1]-mo,-base[2]+mo+offset])
 				rotate([0, 90, 0]) 
 					linear_extrude(height=5, convexity=1)
 						polygon([[0, 0], [0,,base[1]-plate1[1] +mo], [plate1[2]-base[2]+mo, 0]]);
 
-			translate([-plate1[0]/2,plate1[1]-mo,-base[2]+mo])
+			translate([-plate1[0]/2,plate1[1]-mo,-base[2]+mo+offset])
 				rotate([0, 90, 0]) 
 					linear_extrude(height=5, convexity=1)
 						polygon([[0, 0], [0,base[1]-plate1[1] +mo], [plate1[2]-base[2]+mo, 0]]);
 
 		}
 
-		translate([0,extruder_offset[1],-base[2]*2+mo])
+		translate([0,extruder_offset[1],-base[2]*2+mo+offset])
 			#cylinder(r=pneufit_d/2, h = base[2] + 5+2*mo);
 
-		translate([block_size[0]/2-5-mo,5,-60])
+		translate([block_size[0]/2-5-mo,5,-60-offset])
 			cube([30,30,40]);
 
 		// bracket-carriage mounting holes
@@ -286,9 +288,9 @@ module Bracket() {
 		}
 
 		// hotend mount holes
-		#translate([mounting_plate_hole_spacing, extruder_offset[1], -base[2] - 1])
+		#translate([mounting_plate_hole_spacing, extruder_offset[1], -base[2] - 1 + offset])
 			cylinder(r=carriage_hole_d * da6, h=base[2] + 2, $fn=6);
-		#translate([-mounting_plate_hole_spacing, extruder_offset[1], -base[2] - 1])
+		#translate([-mounting_plate_hole_spacing, extruder_offset[1], -base[2] - 1+ offset])
 			cylinder(r=carriage_hole_d * da6, h=base[2] + 2, $fn=6);
 	}
 }
@@ -474,7 +476,7 @@ module	show_assembly(exploded=0) {
 
 //show_assembly(exploded=0);
 //IntegratedFan();
-//Bracket();
+Bracket();
 //HotEndMount();
-Carriage();
+//Carriage();
 
