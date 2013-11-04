@@ -264,7 +264,7 @@ module Bracket() {
 		}
 
 		translate([0,extruder_offset[1],-base[2]*2+mo+offset])
-			#cylinder(r=pneufit_d/2, h = base[2] + 5+2*mo);
+			#cylinder(r=pneufit_d/2, h = base[2] + 10+2*mo);
 
 		translate([block_size[0]/2-5-mo,5,-60-offset])
 			cube([30,30,40]);
