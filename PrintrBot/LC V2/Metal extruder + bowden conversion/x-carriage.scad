@@ -230,12 +230,11 @@ module Carriage() {
 module Bracket() {
 	base		= base_plate;
 
+	offset = 5;
 	// main vertical plate clamped against carriage
 	// outer edge is flat
-	plate1		= [50, 5, 60];
+	plate1		= [50, 5, 53 + offset];
 	
-	offset = 8;
-
 	rotate(printable ? [0, 180, 0] : [0, 0, 0])
 
 	difference() {
