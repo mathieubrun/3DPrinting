@@ -1,8 +1,11 @@
 //pdiam based on Nophead's : http://hydraraptor.blogspot.com/2011/02/polyholes.html 
+debug=0;
 
-debug = 0;
-show_axles=0;
-assemble= 0;
+printable = 1;
+assemble= 1;
+show_axles=1;
+assemble= printable?0:assemble;
+show_axles=printable?0:show_axles;
 
 function pdiam(diam, tolerance=0.1)=debug?diam:(diam) / cos (180 / max(round(2 * diam),3))+tolerance;
 
@@ -14,10 +17,6 @@ filament_D = 1.75;
 
 m3_D=3;
 m8_D=8;
-
-
-echo(pdiam(m3_D));
-echo(pdiam(m8_D));
 
 nema_size = 42;
 nema_holes_distance = 31;
@@ -35,9 +34,13 @@ bearing608_width	= 7;
 
 bearingLM8UU_height	= 23.75;
 bearingLM8UU_D	= 15;
+washer_LM8UU_D = 13.8;
 
-thickness = 3;
-depth = 15+thickness;
+thickness = 4;
+depth = 18;
+
+echo( "Required M3 len : ");
+echo( 2*thickness + depth + 4);
 
 holder_offset_x = bearingLM8UU_D / 2 + thickness / 2;
 holder_offset_y = -bearingLM8UU_D/2+ thickness / 2;
@@ -75,7 +78,7 @@ if(assemble > 0)
 {
 	main();
 
-	translate([0, 0, depth+thickness])
+	translate([0, 0, depth+thickness+1])
 	top();
 
 	translate([nema_size-hole_distance*2, 0,thickness+0.5])
@@ -92,18 +95,19 @@ if(assemble == 0)
 {
 	main();
 
-	translate([-5, 0, thickness])
-	rotate([0,180,0])
+	translate([nema_size + 5, nema_size+nema_size/2, thickness])
+	rotate([0,180,90])
 	top();
 
-	translate([nema_size + 5, 0, hole_distance*2])
+	translate([-depth-3, 0, hole_distance*2])
 	rotate([0, 90, 0])
 	translate([hole_distance, hole_distance, 0])
 	rotate([0, 0, idler_angle])
-	translate([-hole_distance, -hole_distance, 0])
+	translate([-hole_distance, -hole_distance+ 5, 0])
 	idler();
 
-	translate([0, nema_size + 10,0])
+	translate([nema_size + 10, - nema_size/2 + 15,0])
+	rotate([0,0,180])
 	holder();
 }
 
@@ -189,11 +193,19 @@ module top()
 		{
 			translate([0,0, 0])
 			cube([nema_size, nema_size, thickness]);
+			
+			// lm8uu holder
+			translate([holder_offset_x, holder_offset_y,0])
+			cylinder(r=pdiam(bearingLM8UU_D)/2 + thickness/2, h=thickness);
 		}
 
 		// lm8uu holder
 		translate([holder_offset_x, holder_offset_y,-mo])
-		cylinder(r=pdiam(bearingLM8UU_D)/2 + thickness/2, h=thickness+2*mo);
+		cylinder(r=pdiam(bearingLM8UU_D)/2 + thickness/2 + mo, h=bearingLM8UU_height-thickness-depth);
+
+		// lm8uu holder
+		translate([holder_offset_x, holder_offset_y,-mo])
+		cylinder(r=pdiam(m8_D)/2, h=thickness+2*mo);
 
 		// motor holes
 		for (h = holes) 
