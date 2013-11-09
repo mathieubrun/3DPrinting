@@ -1,6 +1,8 @@
 //pdiam based on Nophead's : http://hydraraptor.blogspot.com/2011/02/polyholes.html 
 
 debug = 1;
+show_axles=0;
+assemble= 0;
 
 function pdiam(diam, tolerance=0.2)=debug?diam:(diam) / cos (180 / max(round(2 * diam),3))+tolerance;
 
@@ -12,8 +14,6 @@ filament_D = 1.75;
 
 m3_D=3;
 m8_D=8;
-
-filament_path_width = 10;
 
 nema_size = 42;
 nema_holes_distance = 31;
@@ -31,9 +31,13 @@ bearing608_width	= 8;
 
 pneufit_D = 9.8;
 pneufit_depth = 7;
+filament_path_width = pneufit_D + 2;
 
-mo = 0.1;
+mo = 0.01;
 da6 = 1/cos(180/6)/2;
+
+idler_angle = 13;
+idler_rotation_tolerance = 1;
 
 hole_distance = (nema_size - nema_holes_distance) / 2; 
 holes = 
@@ -49,12 +53,9 @@ pillar_offset = hole_distance - pillar_width / 2;
 pillars = 
 [
 	[pillar_offset,pillar_offset,thickness-mo],
-//	[nema_size - pillar_offset - pillar_width,pillar_offset,thickness-mo],
 	[pillar_offset,nema_size - pillar_offset - pillar_width,thickness-mo],
-//	[nema_size - pillar_offset - pillar_width,nema_size - pillar_offset - pillar_width,thickness-mo],
 ];
-show_axles=1;
-assemble= 1;
+
 
 if(assemble > 0)
 {
@@ -74,6 +75,26 @@ if(assemble > 0)
 	holder();
 }
 
+if(assemble == 0)
+{
+	main();
+
+	translate([-5, 0, thickness])
+	rotate([0,180,0])
+	top();
+
+	translate([nema_size + 5, 0, hole_distance*2])
+	rotate([0, 90, 0])
+	translate([hole_distance, hole_distance, 0])
+	rotate([0, 0, idler_angle])
+	translate([-hole_distance, -hole_distance, 0])
+	idler();
+
+	translate([0, nema_size + 10,0])
+	holder();
+}
+
+
 module main()
 {
 	difference()
@@ -83,9 +104,12 @@ module main()
 		{
 			cube([nema_size, nema_size, thickness]);
 
+			translate([0,-pneufit_depth+mo,0])
+			cube([nema_size, pneufit_depth, thickness + depth]);
+
 			// filament guide
-			translate([nema_size/2-filament_path_width/2+extruder_gear_D/2, 0, thickness-mo])
-			cube([filament_path_width, nema_size/2-extruder_gear_D/2, depth]);
+			translate([nema_size/2-filament_path_width/2+extruder_gear_D/2, -pneufit_depth, thickness-mo])
+			cube([filament_path_width, nema_size/2-extruder_gear_D/2, depth+mo]);
 	
 			for (p = pillars) 
 			{
@@ -98,15 +122,22 @@ module main()
 		translate([nema_size/2, nema_size/2, -mo])
 		cylinder(r=nema_axle_cutout_D / 2, h=thickness+ depth + mo);
 
+		// idler rotation tolerance
+		translate([nema_size - hole_distance * 2 - idler_rotation_tolerance, hole_distance, thickness])
+		cube([2 * hole_distance, hole_distance, depth+mo]);
+
+		translate([nema_size - hole_distance, hole_distance, thickness])
+		cylinder(r=hole_distance + idler_rotation_tolerance, h=depth);
+
 		// filament path
 		translate([nema_size/2+extruder_gear_D/2, -mo, thickness + depth / 2])
 		rotate([-90, 0, 0])
 		cylinder(r=filament_D / 2, h=100);
 
 		// pneufit hole
-		translate([nema_size/2+extruder_gear_D/2, -mo, thickness + depth / 2])
+		translate([nema_size/2+extruder_gear_D/2, -pneufit_depth - mo, thickness + depth / 2])
 		rotate([-90, 0, 0])
-		cylinder(r=pdiam(pneufit_D)/ 2, h=pneufit_depth);
+		#cylinder(r=pdiam(pneufit_D)/ 2, h=pneufit_depth);
 
 		// motor holes
 		for (h = holes) 
@@ -171,13 +202,16 @@ module idler()
 		union()
 		{
 			translate([hole_distance, hole_distance, 0])
-			rotate([0, 0, -13])
-			translate([-hole_distance, -hole_distance, 0])
+			rotate([0, 0, -idler_angle])
+			translate([-hole_distance, 0, 0])
 			cube([hole_distance*2, nema_size + 10, depth]);
+
+			translate([hole_distance, hole_distance, 0])
+			cylinder(r=hole_distance, h=depth);
 		}
 
 		translate([hole_distance, h+hole_distance/2, thickness/2])
-		#cylinder(r=pdiam(m8_D) / 2, h=depth-thickness+10);
+		cylinder(r=pdiam(m8_D) / 2, h=depth-thickness);
 
 		translate([hole_distance, h+hole_distance/2, depth/2-bearing608_clr/2])
 		cylinder(r=pdiam(bearing608_D) / 2, h=bearing608_clr);
