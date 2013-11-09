@@ -230,7 +230,7 @@ module Carriage() {
 module Bracket() {
 	base		= base_plate;
 
-	offset = 5;
+	offset = 6;
 	// main vertical plate clamped against carriage
 	// outer edge is flat
 	plate1		= [50, 5, 53 + offset];
@@ -266,7 +266,7 @@ module Bracket() {
 			#cylinder(r=pneufit_d/2, h = base[2] + 10+2*mo);
 
 		translate([block_size[0]/2-5-mo,5,-60-offset])
-			cube([30,30,40]);
+			cube([30,30,40+offset]);
 
 		// bracket-carriage mounting holes
 		for (X = carriage_holes_top) {
