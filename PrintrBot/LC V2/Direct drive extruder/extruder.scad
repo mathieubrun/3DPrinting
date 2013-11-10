@@ -1,11 +1,8 @@
 //pdiam based on Nophead's : http://hydraraptor.blogspot.com/2011/02/polyholes.html 
 debug=0;
 
-printable = 1;
-assemble= 1;
-show_axles=1;
-assemble= printable?0:assemble;
-show_axles=printable?0:show_axles;
+assemble= 0;
+show_axles=0;
 
 function pdiam(diam, tolerance=0.1)=debug?diam:(diam) / cos (180 / max(round(2 * diam),3))+tolerance;
 
@@ -28,16 +25,19 @@ shaft_D = 5;
 bearing625_D = 16.25;
 bearing625_height=5;
 
-bearing608_clr	= 10.2;
 bearing608_D	= 22;
+bearing608_D_clr	= 24;
 bearing608_width	= 7;
+bearing608_clr	= bearing608_width+1;
+bearing608_m8	= 14;
 
 bearingLM8UU_height	= 23.75;
 bearingLM8UU_D	= 15;
-washer_LM8UU_D = 13.8;
+holder_LM8UU_D = 1;
 
 thickness = 4;
 depth = 18;
+idler_depth = depth - 1;
 
 echo( "Required M3 len : ");
 echo( 2*thickness + depth + 4);
@@ -52,7 +52,7 @@ filament_path_height = nema_size/4 + 2;
 mo = 0.01;
 da6 = 1/cos(180/6)/2;
 
-idler_angle = 13;
+idler_angle = 0;
 idler_rotation_tolerance = 1;
 
 hole_distance = (nema_size - nema_holes_distance) / 2; 
@@ -82,12 +82,9 @@ if(assemble > 0)
 	top();
 
 	translate([nema_size-hole_distance*2, 0,thickness+0.5])
-	translate([hole_distance, hole_distance, 0])
-	rotate([0, 0, 0])
-	translate([-hole_distance, -hole_distance, 0])
 	idler();
 
-	translate([0, nema_size+1,0])
+	translate([0, nema_size+1,thickness+0.5])
 	holder();
 }
 
@@ -142,8 +139,10 @@ module main()
 		polygon([[nema_size+mo, nema_size+mo], [nema_size+mo, pillar_width], [pillar_width,nema_size + mo]], center=false);
 
 		// lm8uu holder
-		translate([holder_offset_x, holder_offset_y,-mo])
+		translate([holder_offset_x, holder_offset_y,holder_LM8UU_D])
 		cylinder(r=pdiam(bearingLM8UU_D)/2, h=bearingLM8UU_height+thickness+2*mo);
+		translate([holder_offset_x, holder_offset_y,-mo])
+		cylinder(r=pdiam(m8_D)/2, h=holder_LM8UU_D+2*mo);
 
 		// axle cutout
 		translate([nema_size/2, nema_size/2, -mo])
@@ -201,7 +200,7 @@ module top()
 
 		// lm8uu holder
 		translate([holder_offset_x, holder_offset_y,-mo])
-		cylinder(r=pdiam(bearingLM8UU_D)/2 + thickness/2 + mo, h=bearingLM8UU_height-thickness-depth);
+		cylinder(r=pdiam(bearingLM8UU_D)/2 + thickness/2 + mo, h=bearingLM8UU_height-thickness-depth+holder_LM8UU_D);
 
 		// lm8uu holder
 		translate([holder_offset_x, holder_offset_y,-mo])
@@ -236,66 +235,67 @@ module idler()
 	dd = extruder_gear_D/2 + bearing608_D / 2 - d;
 	h = sqrt(pow(dd,2)+pow(d,2)) + hole_distance;
 
-	idler_depth = depth - 1;
+	bearing_holder = 8;
 
 	difference()
 	{
 		union()
 		{
+			
+			translate([0, hole_distance, 0])
+			cube([hole_distance*2, nema_size + 5, idler_depth]);
+
+			translate([hole_distance, 0, 0])
+			cube([hole_distance, hole_distance, idler_depth]);
+
 			translate([hole_distance, hole_distance, 0])
-			rotate([0, 0, -idler_angle])
-			translate([-hole_distance, -hole_distance, 0])
+			cylinder(r=hole_distance, h=idler_depth);
+			
+			difference()
 			{
-				translate([0, hole_distance, 0])
-				cube([hole_distance*2, nema_size + 5, idler_depth]);
+				translate([hole_distance, h, 0])
+				cylinder(r=pdiam(m8_D + bearing_holder) / 2, h=idler_depth);
 
-				translate([hole_distance, 0, 0])
-				cube([hole_distance, hole_distance, idler_depth]);
-
-				translate([hole_distance, hole_distance, 0])
-				cylinder(r=hole_distance, h=idler_depth);
+				translate([hole_distance, h - pdiam(m8_D + bearing_holder)/2, -mo])
+				cube([pdiam(m8_D + bearing_holder), pdiam(m8_D + bearing_holder),idler_depth+2*mo]);
 			}
 		}
-
 		
-		translate([hole_distance, hole_distance, 0])
-		rotate([0, 0, -idler_angle])
-		translate([-hole_distance, -hole_distance, 0])
+		// idler fixation hole
+		translate(holes[0])
+		cylinder(r=pdiam(m3_D)/2, h=idler_depth + thickness+mo*2);
+
+		// idler tightening holes
+		for (h = holder_holes) 
 		{
-			translate(holes[0])
-			cylinder(r=pdiam(m3_D)/2, h=idler_depth + thickness+mo*2);
-
-			translate([-8,nema_size+2,idler_depth/2])
-			rotate([90,0,idler_angle/2])
-			cylinder(r=pdiam(filament_D)/2, h=idler_depth + thickness+mo*2);
-
-			translate([-mo,nema_size+hole_distance,idler_depth - 4])
+			translate([-mo,nema_size+hole_distance,idler_depth/2 + h])
 			rotate([0,90,0])
 			cylinder(r=pdiam(m3_D)/2, h=idler_depth + thickness+mo*2);
 
-			translate([-mo,nema_size+hole_distance-2,idler_depth - 4])
-			rotate([0,90,0])
-			cylinder(r=pdiam(m3_D)/2, h=idler_depth + thickness+mo*2);
-		
-			translate([-mo,nema_size+hole_distance,idler_depth - 13])
-			rotate([0,90,0])
-			cylinder(r=pdiam(m3_D)/2, h=idler_depth + thickness+mo*2);
+			translate([-mo,nema_size+hole_distance-pdiam(m3_D)/2,idler_depth/2 + h-pdiam(m3_D)/2])
+			cube([idler_depth+2*mo, pdiam(m3_D)/2, pdiam(m3_D)]);
 
-			translate([-mo,nema_size+hole_distance-2,idler_depth - 13])
+			translate([-mo,nema_size+hole_distance-2,idler_depth/2 + h])
 			rotate([0,90,0])
 			cylinder(r=pdiam(m3_D)/2, h=idler_depth + thickness+mo*2);
-		} 
-		
-		translate([hole_distance, h, thickness/2])
-		cylinder(r=pdiam(m8_D) / 2, h=idler_depth-thickness);
+		}	
 
-		translate([hole_distance, h, depth/2-bearing608_clr/2])
-		cylinder(r=pdiam(bearing608_D) / 2 + 1, h=bearing608_clr);
+		// bearing fixation
+		translate([hole_distance, h - pdiam(m8_D)/2, idler_depth/2-bearing608_m8/2])
+		cube([pdiam(m8_D), pdiam(m8_D),bearing608_m8]);
+		translate([hole_distance, h, idler_depth/2-bearing608_m8/2])
+		cylinder(r=pdiam(m8_D) / 2, h=bearing608_m8);
+
+		// bearing clearance
+		translate([hole_distance, h - pdiam(bearing608_D_clr)/2, idler_depth/2-bearing608_clr/2])
+		cube([pdiam(bearing608_D_clr), pdiam(bearing608_D_clr),bearing608_clr]);
+		translate([hole_distance, h,  idler_depth/2-bearing608_clr/2])
+		cylinder(r=pdiam(bearing608_D_clr) / 2, h=bearing608_clr);
 	}		
 
 	if(show_axles > 0)
 	{
-		translate([hole_distance, h, depth/2-bearing608_width/2])
+		translate([hole_distance, h, idler_depth/2-bearing608_width/2])
 		color("Grey")cylinder(r=pdiam(bearing608_D) / 2, h=bearing608_width);		
 	}	
 }
@@ -306,18 +306,18 @@ module holder()
 	{
 		union()
 		{
-			cube([nema_size/2 + extruder_gear_D / 2 + thickness, m3_D + 4, depth + 2* thickness]);
+			cube([nema_size/2 + extruder_gear_D / 2 + thickness, m3_D + 4, idler_depth]);
 			translate([-m3_D - 4,-15+ m3_D + 4,0])
-			cube([m3_D + 4, 15, depth + 2* thickness]);
+			cube([m3_D + 4, 15, idler_depth]);
 		}
 		
-		translate([nema_size/2 + extruder_gear_D / 2,10,depth/2+thickness])
+		translate([nema_size/2 + extruder_gear_D / 2,10,idler_depth/2])
 		rotate([90,0,0])
 		cylinder(r=pdiam(filament_D)/2, h = 20);
 
 		for (h = holder_holes) 
 		{
-			translate([-m3_D - 4-mo,(m3_D + 4)/2,depth/2 + thickness - h])
+			translate([-m3_D - 4-mo,(m3_D + 4)/2,idler_depth/2 - h])
 			rotate([0,90,0])
 			#cylinder(r=pdiam(m3_D)/2, h=nema_size/2 + extruder_gear_D / 2 + thickness+ m3_D + 4 + mo*2);
 		}	
