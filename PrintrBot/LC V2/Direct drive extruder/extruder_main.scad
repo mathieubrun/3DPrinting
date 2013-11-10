@@ -23,7 +23,7 @@ module main()
 
 			// lm8uu holder
 			translate([holder_offset_x, holder_offset_y,0])
-			cylinder(r=pdiam(bearingLM8UU_D,0.5)/2 + thickness/2, h=bearingLM8UU_height);
+			cylinder(r=pdiam(bearingLM8UU_D,1)/2 + thickness/2, h=bearingLM8UU_height+holder_LM8UU_D);
 
 			// pneufit hole
 			translate([nema_size/2-(filament_path_width)/2+extruder_gear_D/2, -pneufit_depth, 0])

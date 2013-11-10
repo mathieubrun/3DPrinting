@@ -47,7 +47,7 @@ holder_offset_y = -bearingLM8UU_D/2+ thickness / 2;
 
 pneufit_D = 9.8;
 pneufit_depth = 7;
-filament_path_width = pneufit_D + 2;
+filament_path_width = pneufit_D + 4;
 filament_path_height = nema_size/4 + 2;
 mo = 0.01;
 da6 = 1/cos(180/6)/2;
