@@ -24,7 +24,7 @@ module top()
 
 		// lm8uu holder
 		translate([holder_offset_x, holder_offset_y,-mo])
-		cylinder(r=pdiam(m8_D)/2, h=thickness+2*mo);
+		cylinder(r=pdiam(m8_D,1)/2, h=thickness+2*mo);
 
 		// motor holes
 		for (h = holes) 

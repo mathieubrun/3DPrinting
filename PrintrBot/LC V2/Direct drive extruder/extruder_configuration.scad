@@ -18,7 +18,7 @@ m8_D=8;
 nema_size = 42;
 nema_holes_distance = 31;
 nema_axle_length = 24;
-nema_axle_cutout_D = 23;
+nema_axle_cutout_D = 24;
 
 shaft_D = 5;
 

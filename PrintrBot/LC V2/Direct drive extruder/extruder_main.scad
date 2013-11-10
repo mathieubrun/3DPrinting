@@ -23,7 +23,11 @@ module main()
 
 			// lm8uu holder
 			translate([holder_offset_x, holder_offset_y,0])
-			cylinder(r=pdiam(bearingLM8UU_D)/2 + thickness/2, h=bearingLM8UU_height);
+			cylinder(r=pdiam(bearingLM8UU_D,0.5)/2 + thickness/2, h=bearingLM8UU_height);
+
+			// pneufit hole
+			translate([nema_size/2-(filament_path_width)/2+extruder_gear_D/2, -pneufit_depth, 0])
+			cube([filament_path_width,pneufit_depth, thickness + depth]);
 		}
 
 		// material cutout
@@ -35,7 +39,7 @@ module main()
 		translate([holder_offset_x, holder_offset_y,holder_LM8UU_D])
 		cylinder(r=pdiam(bearingLM8UU_D)/2, h=bearingLM8UU_height+thickness+2*mo);
 		translate([holder_offset_x, holder_offset_y,-mo])
-		cylinder(r=pdiam(m8_D)/2, h=holder_LM8UU_D+2*mo);
+		cylinder(r=pdiam(m8_D,1)/2, h=holder_LM8UU_D+2*mo);
 
 		// axle cutout
 		translate([nema_size/2, nema_size/2, -mo])
@@ -51,12 +55,12 @@ module main()
 		// filament path
 		translate([nema_size/2+extruder_gear_D/2, -mo, thickness + depth / 2])
 		rotate([-90, 0, 0])
-		cylinder(r=filament_D / 2, h=100);
+		cylinder(r=pdiam(filament_D,0.25) / 2, h=100, $fn=8);
 
 		// pneufit hole
 		translate([nema_size/2+extruder_gear_D/2, -pneufit_depth - mo, thickness + depth / 2])
 		rotate([-90, 0, 0])
-		cylinder(r=pdiam(pneufit_D)/ 2, h=pneufit_depth);
+		#cylinder(r=pdiam(pneufit_D)/ 2, h=pneufit_depth);
 
 		// motor holes
 		for (h = holes) 
