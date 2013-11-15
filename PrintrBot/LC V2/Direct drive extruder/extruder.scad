@@ -4,8 +4,8 @@ use <extruder_top.scad>
 use <extruder_idler.scad>
 use <extruder_holder.scad>
 
-assemble= 0;
-show_axles=0;
+assemble= 1;
+show_axles=1;
 
 if(assemble > 0)
 {
@@ -14,7 +14,8 @@ if(assemble > 0)
 	translate([0, 0, depth+thickness+1])
 	top();
 
-	translate([nema_size-hole_distance*2, 0,thickness+0.5])
+	translate([nema_size, 0,thickness+depth])
+	rotate([0, 180, 0])
 	idler();
 
 	translate([0, nema_size+1,thickness+0.5])

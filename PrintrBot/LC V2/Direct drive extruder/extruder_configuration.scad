@@ -36,7 +36,7 @@ bearingLM8UU_D	= 15;
 holder_LM8UU_D = 1;
 
 thickness = 4;
-depth = 18;
+depth = 16;
 idler_depth = depth - 1;
 
 echo( "Required M3 len : ");
@@ -72,4 +72,5 @@ pillars =
 	[pillar_offset,nema_size - pillar_offset - pillar_width,thickness-mo],
 ];
 
-holder_holes = [-5,5];
+holder_holes_distance = depth / 2 - m3_D - 1;
+holder_holes = [-holder_holes_distance,holder_holes_distance];
