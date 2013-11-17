@@ -20,7 +20,7 @@ module top()
 
 		// lm8uu holder
 		translate([holder_offset_x, holder_offset_y,-mo])
-		cylinder(r=pdiam(bearingLM8UU_D)/2 + thickness/2 + mo, h=bearingLM8UU_height-thickness-depth+holder_LM8UU_D);
+		cylinder(r=pdiam(bearingLM8UU_D)/2 + thickness/2 + mo, h=bearingLM8UU_height-thickness-depth+holder_LM8UU_D+2*mo);
 
 		// lm8uu holder
 		translate([holder_offset_x, holder_offset_y,-mo])

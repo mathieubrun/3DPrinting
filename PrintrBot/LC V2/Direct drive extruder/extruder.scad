@@ -11,7 +11,7 @@ if(assemble > 0)
 {
 	main();
 
-	translate([0, 0, depth+thickness+1])
+	translate([0, 0, depth+thickness+2])
 	top();
 
 	translate([nema_size, 0,thickness+depth])

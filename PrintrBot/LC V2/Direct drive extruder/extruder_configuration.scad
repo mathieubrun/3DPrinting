@@ -4,7 +4,7 @@ debug=0;
 assemble= 0;
 show_axles=0;
 
-function pdiam(diam, tolerance=0.1)=debug?diam:(diam) / cos (180 / max(round(2 * diam),3))+tolerance;
+function pdiam(diam, tolerance=0.3)=debug?diam:(diam) / cos (180 / max(round(2 * diam),3))+tolerance;
 
 //function pdiam(diam)=diam;
 
@@ -31,12 +31,12 @@ bearing608_width	= 7;
 bearing608_clr	= bearing608_width+1;
 bearing608_m8	= 14;
 
-bearingLM8UU_height	= 23.75;
+bearingLM8UU_height	= 24;
 bearingLM8UU_D	= 15;
 holder_LM8UU_D = 1;
 
 thickness = 4;
-depth = 16;
+depth = 17;
 idler_depth = depth - 1;
 
 echo( "Required M3 len : ");

@@ -11,6 +11,10 @@ module main()
 		{
 			cube([nema_size, nema_size, thickness]);
 
+			// make sure there is no small holes between lm8uu and pneufit holders
+			translate([0,-4,0])
+			cube([nema_size/2, 5, thickness+depth]);
+ 
 			// filament guide
 			translate([nema_size/2-filament_path_width/2+extruder_gear_D/2, 0, thickness-mo])
 			cube([filament_path_width, filament_path_height, depth+mo]);
@@ -23,7 +27,7 @@ module main()
 
 			// lm8uu holder
 			translate([holder_offset_x, holder_offset_y,0])
-			cylinder(r=pdiam(bearingLM8UU_D,1)/2 + thickness/2, h=bearingLM8UU_height+holder_LM8UU_D);
+			cylinder(r=pdiam(bearingLM8UU_D)/2 + thickness/2, h=bearingLM8UU_height+holder_LM8UU_D);
 
 			// pneufit hole
 			translate([nema_size/2-(filament_path_width)/2+extruder_gear_D/2, -pneufit_depth, 0])
@@ -37,13 +41,13 @@ module main()
 
 		// lm8uu holder
 		translate([holder_offset_x, holder_offset_y,holder_LM8UU_D])
-		cylinder(r=pdiam(bearingLM8UU_D)/2, h=bearingLM8UU_height+thickness+2*mo);
+		cylinder(r=pdiam(bearingLM8UU_D,0.5)/2, h=bearingLM8UU_height+thickness+2*mo);
 		translate([holder_offset_x, holder_offset_y,-mo])
 		cylinder(r=pdiam(m8_D,1)/2, h=holder_LM8UU_D+2*mo);
 
 		// axle cutout
 		translate([nema_size/2, nema_size/2, -mo])
-		cylinder(r=nema_axle_cutout_D / 2, h=thickness+ depth + 2 * mo);
+		cylinder(r=pdiam(nema_axle_cutout_D) / 2, h=thickness+ depth + 2 * mo);
 
 		// idler rotation tolerance
 		translate([nema_size - hole_distance * 2 - idler_rotation_tolerance, hole_distance, thickness])
