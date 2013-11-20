@@ -1,6 +1,6 @@
 include<extruder_configuration.scad>
 
-rotate([0,90,0])
+rotate([0,270,0])
 idler();
 
 module idler()
@@ -30,7 +30,7 @@ module idler()
 				translate([hole_distance, h, 0])
 				cylinder(r=pdiam(m8_D + bearing_holder) / 2, h=idler_depth);
 
-				translate([hole_distance, h - pdiam(m8_D + bearing_holder)/2, -mo])
+				translate([-hole_distance, h - pdiam(m8_D + bearing_holder)/2, -mo])
 				cube([pdiam(m8_D + bearing_holder), pdiam(m8_D + bearing_holder),idler_depth+2*mo]);
 			}
 		}
@@ -44,21 +44,20 @@ module idler()
 		{
 			translate([-mo,nema_size+hole_distance,idler_depth/2 + h])
 			rotate([0,90,0])
-			cylinder(r=pdiam(m3_D)/2, h=idler_depth + thickness+mo*2);
+			cylinder(r=pdiam(m4_D,1)/2, h=idler_depth + thickness+mo*2);
 
-			translate([-mo,nema_size+hole_distance-pdiam(m3_D)/2,idler_depth/2 + h-pdiam(m3_D)/2])
-			cube([idler_depth+2*mo, pdiam(m3_D)/2, pdiam(m3_D)]);
+			translate([-mo,nema_size+hole_distance-pdiam(m4_D)/2,idler_depth/2 + h-pdiam(m4_D,1)/2])
+			cube([idler_depth+2*mo, pdiam(m4_D,1)/2, pdiam(m4_D,1)]);
 
 			translate([-mo,nema_size+hole_distance-2,idler_depth/2 + h])
 			rotate([0,90,0])
-			cylinder(r=pdiam(m3_D)/2, h=idler_depth + thickness+mo*2);
+			cylinder(r=pdiam(m4_D,1)/2, h=idler_depth + thickness+mo*2);
 		}	
 
 		// bearing fixation
-		translate([hole_distance, h - pdiam(m8_D)/2, idler_depth/2-bearing608_m8/2])
-		cube([pdiam(m8_D), pdiam(m8_D),bearing608_m8]);
+
 		translate([hole_distance, h, idler_depth/2-bearing608_m8/2])
-		cylinder(r=pdiam(m8_D) / 2, h=bearing608_m8);
+		cylinder(r=pdiam(m8_D,-0.2) / 2, h=bearing608_m8);
 
 		// bearing clearance
 		translate([hole_distance, h - pdiam(bearing608_D_clr)/2, idler_depth/2-bearing608_clr/2])

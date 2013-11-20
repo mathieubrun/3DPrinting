@@ -19,9 +19,9 @@ module holder()
 
 		for (h = holder_holes) 
 		{
-			translate([-m3_D - 4-mo,(m3_D + 4)/2,idler_depth/2 - h])
+			translate([-m4_D - 4-mo,(m4_D + 3)/2,idler_depth/2 - h])
 			rotate([0,90,0])
-			#cylinder(r=pdiam(m3_D)/2, h=nema_size/2 + extruder_gear_D / 2 + thickness+ m3_D + 4 + mo*2);
+			#cylinder(r=pdiam(m4_D)/2, h=nema_size/2 + extruder_gear_D / 2 + thickness+ m4_D + 4 + mo*2);
 		}	
 	}		
 }
