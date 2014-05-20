@@ -3,7 +3,7 @@ belt_height = 35;
 
 buckle_thickness = 2;
 buckle_length = 30;
-
+buckle_tolerance = 1;
 
 cross_width = 25;
 h_width = 25;
